@@ -1,0 +1,20 @@
+
+xterm*termName:             xterm-256color
+xterm*locale:               true
+xterm*utf8:                 1
+xterm*background:           #1c1c1c
+xterm*foreground:           white
+xterm*highlightColor:       #34b4eb
+xterm*geometry:             120x35
+xterm*faceName:             DejaVu Sans Mono
+xterm*faceSize:             12
+xterm*Scrollbar:            True
+# Xterm*Scrollbar*width:    12
+# XTerm*rightScrollBar:     True
+xterm*visualbell:           false
+xterm*colorBDMode:          false
+xterm*saveLines:            9999
+
+xterm*VT100.Translations: #override \
+                 Ctrl Shift <Key>V:    insert-selection(SELECT) \n\
+                 Ctrl Shift <Key>C:    copy-selection(SELECT)

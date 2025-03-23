@@ -1,0 +1,14 @@
+
+session.menuFile:                                   ~/.fluxbox/menu
+session.keyFile:                                    ~/.fluxbox/keys
+session.configVersion:                              13
+
+session.screen0.strftimeFormat:                     %d %b, %a %02k:%M:%S
+session.screen0.workspaces:                         1
+session.styleFile:                                  /usr/share/fluxbox/styles/fluxmint-aqua
+
+session.screen0.toolbar.widthPercent:               100
+session.screen0.toolbar.placement:                  TopCenter
+session.screen0.toolbar.tools:                      prevwindow, nextwindow, iconbar, systemtray, clock
+
+# https://wiki.ubuntu.com/HowToFluxboxStyles

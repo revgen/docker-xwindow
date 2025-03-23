@@ -1,0 +1,4 @@
+xterm &
+
+# it is an important to use 'exec' command to start main DE app
+exec fluxbox

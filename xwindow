@@ -1,0 +1,125 @@
+#!/bin/bash
+#=============================================================================
+## Helper script to control xwindow docker container
+##
+## Usage: {SCRIPT_NAME} <start|stop|create|remove|logs|info|shell>
+##
+#  Author  : Evgen Rusakov
+#  Url     : https://github.com/revgen/docker-xwindow
+##
+#=============================================================================
+show_help() {
+    sed -n '/^##/,/^$/s/^## \{0,1\}//p' "$0" | sed 's/{SCRIPT_NAME}/'"$(basename "${0}")"'/g' \
+    | sed 's/{VERSION}/'"${VERSION}"'/g'
+    exit 255
+}
+
+#-----------------------------------------------------------------------------
+# PARAMETERS
+IMAGE=${IMAGE:-"rev9en/xwindow"}
+VERSION=${VERSION:-"1.0.0"}
+NAME=${NAME:-"$(basename "${IMAGE}")"}
+
+# Using your current user default group ID inside the docker container
+PGID=${XWINDOW_GID:-"$(id -g)"}
+# Using your current user ID inside the docker container
+PUID=${XWINDOW_UID:-${UID}}
+# get current timezone: linux and os x version or UTC
+TZ=$(ls -l /etc/localtime 2>/dev/null | awk -F"zoneinfo/" '{print $2}' 2>/dev/null || echo "UTC")
+
+RDP_PORT=3389
+MAINUSER=dev
+MAINUSER_PASSWORD="Test1234"
+
+
+#-----------------------------------------------------------------------------
+create_container() {
+    echo "Create a ${NAME} container"
+    echo "Parameters:"
+    echo "* RDP_PORT=${RDP_PORT}"
+    read -rp "Do you want to continue (Y/n)? " opt
+    if [ "${opt:-"y"}" != "y" ] && [ "${opt}" != "Y" ]; then echo "Skip"; exit 1; fi
+
+    docker create --name="${NAME}" \
+        --privileged \
+        -p ${RDP_PORT}:3389 \
+        -e "MAINUSER_PASSWORD=${MAINUSER_PASSWORD}" \
+        -e PGID=${PGID} -e PUID=${PUID} \
+        -e TZ="${TZ}" \
+        "${IMAGE}:${VERSION}"
+    echo "Container '${NAME}' created successfully (from image: ${IMAGE}:${VERSION})."
+}
+
+#-----------------------------------------------------------------------------
+open_shell() {
+    docker exec -it "${NAME}" su -l "${MAINUSER}"
+}
+
+#-----------------------------------------------------------------------------
+start_container() {
+    echo "Starting '${NAME}' container..."
+    docker start "${NAME}" && echo "Started '${NAME} - successfully"
+}
+
+#-----------------------------------------------------------------------------
+stop_container() {
+    echo "Stopping '${NAME}' container ..."
+    docker stop "${NAME}" && echo "Stopped '${NAME}' - successfully"
+}
+
+#-----------------------------------------------------------------------------
+remove_container() {
+    stop_container
+    echo "Removing '${NAME}' container..."
+    docker rm "${NAME}" 2>/dev/null
+    echo "Done"
+}
+
+build_image_locally() {
+    cd "$(dirname "${0}")"
+    echo "Create docker image from ${PWD} directory"
+    docker build --progress=plain -t "${IMAGE}" ./ || exit 1
+    docker tag "${IMAGE}:latest" "${IMAGE}:${VERSION}"
+}
+
+#-----------------------------------------------------------------------------
+# Show main information about a contaier
+status_container() {
+    img=$(docker images "${IMAGE}" --format "{{.Repository}}:{{.Tag}}")
+    if [ -n "${img}" ]; then echo "    Image: ${img}";
+    else echo "    Image: Error - Image '${NAME}' not found"; fi
+    id=$(docker ps --filter name=${NAME} --format "{{.ID}}")
+    echo "Container: ${NAME}"
+    if [ -n "${id}" ]; then
+        ports=$(docker ps --filter name="${NAME}" --format "{{.Ports}}")
+        status=$(docker ps --filter name="${NAME}" --format "{{.Status}}")
+        mounts=$(docker inspect --format="{{range .Mounts }}{{.Source}} -> {{.Destination}},{{end}}" "${NAME}" | tr -s ',' '; ')
+        started=$(docker inspect --format='{{.State.StartedAt}}' "${NAME}")
+        echo "*  Status: ${status}"
+        echo "* Started: ${started}"
+        echo "*      ID: ${id}"
+        echo "*   Ports: ${ports}"
+        echo "*  Mounts: ${mounts}"
+        return 0
+    else
+        echo "*  Status: stopped or not exists"   
+        return 1
+    fi    
+}
+
+#-----------------------------------------------------------------------------
+# Parse command line and handle a command
+case "${1:-"help"}" in
+    create|C)           shift; create_container "${@}" ;;
+    delete|remove)      shift; remove_container "${@}" ;;
+    start|s)            shift; start_container "${@}" ;;
+    stop|S)             shift; stop_container "${@}" ;;
+    shell|sh)           shift; open_shell "${@}" ;;
+    log|logs|l)         shift; docker logs "${NAME}" "${@}" ;;
+    build|b)            shift; build_image_locally ;;
+    status|st)          shift; status_container "${@}" ;;
+    info|I)             shift; status_container "${@}" ;;
+    version|--version)  echo "${NAME} -> ${IMAGE}:${VERSION}" ;;
+    help|--help|h|-h)   show_help ;;
+    *) echo "Error: Unknow command '${1}'."; show_help ;;
+esac

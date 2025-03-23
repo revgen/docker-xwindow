@@ -1,0 +1,5 @@
+export PATH="${HOME}/.local/bin:${PATH}"
+
+alias :q='exit'
+alias ll='ls -ahl'
+alias xvim='xterm -geometry 120x50+50+50 -T xvim -n xvim -e vim'

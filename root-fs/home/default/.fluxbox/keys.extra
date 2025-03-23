@@ -1,0 +1,18 @@
+
+# Mod1 - Alt/Option key
+# Mod4 - Win/Command key
+Shift Control F12 :RootMenu
+Mod1 F12 :RootMenu
+Mod4 F12 :RootMenu
+Mod1 Escape :RootMenu
+Mod4 Escape :RootMenu
+
+Mod1 F9 :Exec x-terminal-emulator
+Mod4 F9 :Exec x-terminal-emulator
+Shift Control T :Exec x-terminal-emulator
+Mod4 T :Exec x-terminal-emulator
+
+Mod1 F10 :Exec x-www-browser
+Mod4 F10 :Exec x-www-browser
+Shift Control B :Exec x-www-browser
+Mod4 B :Exec x-www-browser
