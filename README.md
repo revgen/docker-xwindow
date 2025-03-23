@@ -1,14 +1,10 @@
 # Base docker image with XWindow setup and RDP access
 
+The docker image contains [fluxbox](https://fluxbox.org/), [xterm](https://en.wikipedia.org/wiki/Xterm), and [xrdp](https://en.wikipedia.org/wiki/Xrdp).
 
+The XWindows is not starting automatically, it will be started when [RDP](https://en.wikipedia.org/wiki/Remote_Desktop_Protocol) session will be started.
 
-This is a base docker image with Fluxbox SMTP Relay server based on [postfix](https://www.postfix.org/).
-
-You can run a local smtp server which are pointed to the real private email provider.
-
-_Tested on Gmail and Yahoo._
-
-> **INPORTANT: SMTP server doesn't have any authentication layer. Please do not put it into the public network.**
+![RDP session](https://github.com/revgen/docker-xwindow/blob/master/screenshot-macos.png?raw=true)
 
 ## Usage
 
@@ -16,13 +12,7 @@ _Tested on Gmail and Yahoo._
 docker run -it --rm -e PASSWORD=123456 -p 3389:3389 rev9en/xwindow
 ```
 
-After that a regular smtp server will be available on localhost port 25.
-
-
-## Test
-
-1. Start ```rev9en/smtpserver``` docker image (see: [usage section](#usage))
-2. Run test script to send a test email via SMTP server on localhost port 25: ```python send-test-email.py <sender-email@sample.com>```
+Now, you can use a reguler RDP cliet to conect to the localhost (default port: 3389) with a username **user** and a password **123456**.
 
 ## Build locally
 
@@ -32,9 +22,7 @@ make build
 
 ## Links
 
-* [Docker image source code](https://github.com/revgen/docker-smtpserver)
-* [Docker hub page](https://hub.docker.com/r/rev9en/smtpserver)
-* [Docker alpine official page](https://hub.docker.com/_/alpine)
-* [Postfix Documentation](https://www.postfix.org/documentation.html)
-* [How to configure gmail server as a relayhost in Postfix?](https://access.redhat.com/solutions/3201002)
-* [Postfix relay through Yahoo!](https://www.webcodegeeks.com/web-servers/postfix-relay-through-yahoo-ssl/)
+* [Docker image source code](https://github.com/revgen/docker-xwindow)
+* [Docker hub page](https://hub.docker.com/r/rev9en/xwindow)
+* [Microsoft Remote Desktop Client for MacOS](https://apps.apple.com/us/app/windows-app/id1295203466?mt=12)
+* [Remmina - RDP client for Linux](https://remmina.org/)

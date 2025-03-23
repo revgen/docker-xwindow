@@ -1,7 +1,7 @@
 FROM debian:bookworm-slim
 
 ARG NAME="rev9en/xwindow"
-ARG VERSION="1.1.0"
+ARG VERSION="1.1.1"
 
 LABEL version="${VERSION}"
 LABEL description="Docker image with xwindow setup and rdp access"
